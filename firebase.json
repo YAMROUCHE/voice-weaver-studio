@@ -1,0 +1,44 @@
+{
+  "hosting": {
+    "public": ".next",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "function": "server" // Assurez-vous que 'server' est le nom de votre fonction Next.js SSR si vous l'utilisez,
+                            // ou ajustez pour le routage App Router si App Hosting ne le gère pas automatiquement.
+                            // Pour Genkit et Next.js App Router, Firebase App Hosting gère souvent cela.
+                            // Si vous n'utilisez pas de fonction dédiée pour SSR Next.js et que App Hosting s'en charge,
+                            // la configuration par défaut d'App Hosting pourrait suffire et cette section rewrite
+                            // pourrait ne pas être nécessaire ou être différente.
+                            // Pour une SPA (si 'output: export' dans next.config.js):
+                            // "destination": "/index.html"
+      }
+    ]
+  },
+  "functions": [
+    {
+      "source": ".", // Genkit place souvent les fonctions générées à la racine ou dans un dossier 'functions' après build.
+                     // Si Genkit génère un dossier 'functions' distinct pour le code transpilé, mettez "functions".
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        ".firebase",
+        ".vscode",
+        "src", // Si le code source est transpilé dans un autre répertoire pour le déploiement
+        "public",
+        ".next",
+        "out"
+      ],
+      "runtime": "nodejs20" // Utilisez nodejs18, nodejs20 ou la version supportée par Genkit/Firebase Functions.
+                           // Genkit peut nécessiter Node 18+
+    }
+  ]
+}

@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%; /* White */
+    --foreground: 222 20% 25%; /* Dark Gray */
+
+    --card: 0 0% 100%; /* White */
+    --card-foreground: 222 20% 25%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 20% 25%;
+
+    --primary: 210 70% 55%; /* Bleu discret */
+    --primary-foreground: 0 0% 100%; /* White */
+
+    --secondary: 220 15% 90%; /* Lighter Gray */
+    --secondary-foreground: 222 20% 25%;
+
+    --muted: 220 15% 93%; /* Gris clair */
+    --muted-foreground: 222 15% 50%; /* Softer Gray */
+
+    --accent: 160 70% 45%; /* Teal/Green */
+    --accent-foreground: 0 0% 100%; /* White */
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 220 10% 88%;
+    --input: 220 10% 92%;
+    --ring: 210 70% 45%; /* Darker/more saturated primary for ring */
+
+    --chart-1: 210 70% 55%; /* Primary blue */
+    --chart-2: 160 70% 45%; /* Accent green/teal */
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --radius: 0.5rem;
+
+    /* Sidebar specific colors */
+    --sidebar-background: 222 47% 11%; /* Dark Slate */
+    --sidebar-foreground: 210 40% 96%; /* Light Gray/White text */
+    --sidebar-primary: 210 70% 55%; /* Main primary color for active/selected items */
+    --sidebar-primary-foreground: 0 0% 100%; /* White text on primary */
+    --sidebar-accent: 222 47% 20%; /* Darker hover for sidebar items */
+    --sidebar-accent-foreground: 210 40% 96%; /* Light text on hover */
+    --sidebar-border: 222 47% 15%; /* Slightly lighter border for dark sidebar */
+    --sidebar-ring: 210 70% 45%; /* Main ring color */
+  }
+
+  .dark {
+    --background: 222 47% 11%; /* Dark Slate */
+    --foreground: 210 40% 96%; /* Light Gray/White text */
+
+    --card: 222 47% 15%; /* Darker card for dark mode */
+    --card-foreground: 210 40% 96%;
+
+    --popover: 222 47% 15%;
+    --popover-foreground: 210 40% 96%;
+
+    --primary: 210 70% 60%; /* Bleu discret (slightly lighter for dark mode) */
+    --primary-foreground: 0 0% 100%; 
+
+    --secondary: 222 47% 20%; /* Darker secondary */
+    --secondary-foreground: 210 40% 96%;
+
+    --muted: 222 47% 18%; /* Darker Gris clair for dark mode header/footer */
+    --muted-foreground: 210 30% 70%;
+
+    --accent: 160 70% 45%; 
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 222 47% 25%;
+    --input: 222 47% 25%;
+    --ring: 210 70% 65%; /* Lighter primary for ring */
+    
+    --chart-1: 210 70% 60%;
+    --chart-2: 160 70% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+
+    /* Sidebar specific colors for dark mode (already dark, so similar to root .dark) */
+    --sidebar-background: 222 47% 9%; /* Even darker sidebar */
+    --sidebar-foreground: 210 40% 96%; 
+    --sidebar-primary: 210 70% 60%; 
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 222 47% 22%; 
+    --sidebar-accent-foreground: 210 40% 96%;
+    --sidebar-border: 222 47% 18%;
+    --sidebar-ring: 210 70% 65%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

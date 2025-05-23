@@ -1,0 +1,90 @@
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Fonction pour vérifier si l'utilisateur est authentifié
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Fonction pour vérifier si l'utilisateur a le rôle 'admin'
+    function isAdmin() {
+      return isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Fonction pour vérifier si l'utilisateur appartient à l'entreprise du document
+    function isUserInCompany(companyId) {
+      return isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId == companyId;
+    }
+
+    // Fonction pour vérifier si le document appartient à l'entreprise de l'utilisateur
+    function resourceBelongsToUserCompany(resource) {
+      return isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId == resource.data.companyId;
+    }
+
+    // Collection: users
+    // Les utilisateurs peuvent lire/modifier leur propre document.
+    // Les admins peuvent lire/écrire tous les documents utilisateurs.
+    match /users/{userId} {
+      allow read, update, delete: if request.auth.uid == userId || isAdmin();
+      allow create: if isAuthenticated(); // Un utilisateur peut se créer (inscription)
+                                       // ou un admin peut créer un utilisateur.
+                                       // Ajouter une vérification plus fine si nécessaire pour la création par admin.
+    }
+
+    // Collection: companies
+    // Les admins peuvent tout faire.
+    // Les utilisateurs authentifiés liés à une entreprise peuvent lire les détails de leur entreprise.
+    match /companies/{companyId} {
+      allow read: if isAdmin() || (isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId == companyId);
+      allow write: if isAdmin(); // Seuls les admins peuvent créer/modifier/supprimer des entreprises
+    }
+    
+    // Collection: twilioNumberMappings (pour mapper un numéro Twilio à companyId/agentId)
+    // Les admins peuvent tout faire. Les services backend (Cloud Functions) accèdent avec des privilèges admin.
+    match /twilioNumberMappings/{phoneNumber} {
+      allow read, write: if isAdmin(); // Ou via des règles d'accès backend si les fonctions n'utilisent pas le contexte admin
+    }
+
+    // Collection: agentConfigurations
+    // Les admins peuvent tout faire.
+    // Les utilisateurs peuvent lire les configurations de l'agent de leur entreprise.
+    match /agentConfigurations/{agentId} {
+      allow read: if isAdmin() || resourceBelongsToUserCompany(get(/databases/$(database)/documents/agentConfigurations/$(agentId)));
+      allow write: if isAdmin();
+    }
+
+    // Collection: calls
+    // Les utilisateurs ne peuvent accéder qu'aux appels de leur entreprise.
+    // Les admins ont un accès complet.
+    match /calls/{callId} {
+      allow read, write: if isAdmin() || resourceBelongsToUserCompany(resource);
+      allow create: if isAuthenticated(); // Création par un flux Genkit/CF agissant pour le compte de l'utilisateur/entreprise
+    }
+
+    // Collection: leads
+    // Les utilisateurs ne peuvent accéder qu'aux prospects de leur entreprise.
+    // Les admins ont un accès complet.
+    match /leads/{leadId} {
+      allow read, write: if isAdmin() || resourceBelongsToUserCompany(resource);
+      allow create: if isAuthenticated(); // Création par un flux Genkit/CF
+    }
+
+    // Collection: memory (si utilisée pour stocker l'historique de conversation par lead/appel)
+    // Accès similaire à 'calls' ou 'leads'.
+    match /memory/{memoryId} {
+      allow read, write: if isAdmin() || resourceBelongsToUserCompany(resource); // Ajuster le champ companyId dans 'memory'
+      allow create: if isAuthenticated();
+    }
+
+    // Collection: datasets
+    // Les utilisateurs ne peuvent accéder qu'aux datasets de leur entreprise.
+    // Les admins ont un accès complet.
+    match /datasets/{datasetId} {
+      allow read, write: if isAdmin() || resourceBelongsToUserCompany(resource);
+      allow create: if isAuthenticated(); // Upload par un utilisateur authentifié
+    }
+  }
+}
